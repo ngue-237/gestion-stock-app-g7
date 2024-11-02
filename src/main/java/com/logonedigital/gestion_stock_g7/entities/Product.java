@@ -8,7 +8,6 @@ import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -17,30 +16,30 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "customers")
-public class Customer implements Serializable {
-
+@Table(name = "products")
+public class Product implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer customerId;
-    @Column(nullable = false)
-    private String firstname;
-    private String lastname;
-
-    private String email;
-    @Column(nullable = false, name = "phone_number")
-    private String phone;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer productId;
+    private String name;
+    @Column(columnDefinition = "text")
+    private String description;
+    private String slug;
+    private Double price;
     @Temporal(TemporalType.TIME)
     private Date createdAt;
     @Temporal(TemporalType.TIME)
     private Date updatedAt;
     private Boolean status;
 
-    //association
-    @OneToMany(mappedBy = "customer")
-    List<Order> orders = new ArrayList<>();
-    @OneToOne
-    private Location location;
+    //associations
+    @ManyToMany(mappedBy = "products")
+    private List<Order> orders;
+    @ManyToOne
+    private CategoryProducts categoryProducts;
+    @OneToOne(mappedBy = "product")
+    private ProductsStock productsStock;
 }
