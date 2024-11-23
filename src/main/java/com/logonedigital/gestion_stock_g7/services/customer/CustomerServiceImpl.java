@@ -36,6 +36,11 @@ public class CustomerServiceImpl implements CustomerService{
     }
 
     @Override
+    public Customer getCustomerByEmail(String email) {
+        return this.customerRepo.fetchByEmail(email).get();
+    }
+
+    @Override
     public Customer updatedCustomer(Customer customer, Integer customerId) {
         //Rechercher le client
         Customer customerToEdit = this.customerRepo.findById(customerId).get();

@@ -41,6 +41,14 @@ public class CustomerController {
                 .body(this.customerService.getCustomerById(customerId));
     }
 
+    @GetMapping(path = "customers/get_by_email{email}")
+    public ResponseEntity<Customer> getCustomerByEmail(@PathVariable String email){
+
+        return ResponseEntity
+                .status(200)
+                .body(this.customerService.getCustomerByEmail(email));
+    }
+
     @PutMapping(path = "customers/update_by_id/{customerId}")
     public ResponseEntity<Customer> updateCustomerById(@PathVariable Integer customerId, @RequestBody Customer customer){
 

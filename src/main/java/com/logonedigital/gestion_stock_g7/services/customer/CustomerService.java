@@ -8,6 +8,7 @@ public interface CustomerService {
     Customer addCustomer(Customer customer);
     List<Customer> getCustomers();
     Customer getCustomerById(Integer customerId);
+    Customer getCustomerByEmail(String email);
     Customer updatedCustomer(Customer customer, Integer customerId);
     void deleteCustomer(Integer customerId);
 }
