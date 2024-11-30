@@ -2,6 +2,7 @@ package com.logonedigital.gestion_stock_g7.controller;
 
 import com.logonedigital.gestion_stock_g7.entities.Customer;
 import com.logonedigital.gestion_stock_g7.services.customer.CustomerService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ public class CustomerController {
     }
 
     @PostMapping(path = "customers/add")
-    public ResponseEntity<Customer> addCustomer(@RequestBody Customer customer){
+    public ResponseEntity<Customer> addCustomer(@Valid @RequestBody Customer customer){
 
         return ResponseEntity
                 .status(201)
@@ -50,7 +51,7 @@ public class CustomerController {
     }
 
     @PutMapping(path = "customers/update_by_id/{customerId}")
-    public ResponseEntity<Customer> updateCustomerById(@PathVariable Integer customerId, @RequestBody Customer customer){
+    public ResponseEntity<Customer> updateCustomerById(@PathVariable Integer customerId, @Valid @RequestBody Customer customer){
 
         return ResponseEntity
                 .status(202)

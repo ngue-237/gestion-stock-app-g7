@@ -30,7 +30,5 @@ public class ProductsStock implements Serializable {
     private Date updatedAt;
     private Boolean status;
 
-    //association
-    @OneToOne
-    private Product product;
+
 }

@@ -2,19 +2,25 @@ package com.logonedigital.gestion_stock_g7.services.products;
 
 import com.github.slugify.Slugify;
 import com.logonedigital.gestion_stock_g7.entities.Product;
+import com.logonedigital.gestion_stock_g7.entities.ProductsStock;
+import com.logonedigital.gestion_stock_g7.exception.ResourceNotFoundException;
 import com.logonedigital.gestion_stock_g7.repositories.ProductRepo;
+import com.logonedigital.gestion_stock_g7.repositories.ProductsStockRepo;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductServiceImpl implements ProductService{
 
     private final ProductRepo productRepo;
+    private final ProductsStockRepo productsStockRepo;
 
-    public ProductServiceImpl(ProductRepo productRepo) {
+    public ProductServiceImpl(ProductRepo productRepo, ProductsStockRepo productsStockRepo) {
         this.productRepo = productRepo;
+        this.productsStockRepo = productsStockRepo;
     }
 
     @Override
@@ -24,6 +30,12 @@ public class ProductServiceImpl implements ProductService{
         product.setCreatedAt(new Date());
         product.setSlug(slg.slugify(product.getName()));
         product.setStatus(true);
+
+        ProductsStock productsStock1 = product.getProductsStock();
+        productsStock1.setStatus(true);
+        productsStock1.setCreatedAt(new Date());
+        product.setProductsStock(this.productsStockRepo.save(productsStock1));
+
         return this.productRepo.save(product);
     }
 
@@ -34,7 +46,10 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     public Product getProductById(Integer id) {
-        return this.productRepo.findById(id).get();
+        Optional<Product> product = this.productRepo.findById(id);
+        if(product.isEmpty())
+            throw new ResourceNotFoundException("This product doesn't exist !");
+        return product.get();
     }
 
     @Override
@@ -46,7 +61,8 @@ public class ProductServiceImpl implements ProductService{
     public Product updateProduct(Integer id, Product product) {
         final Slugify slg = Slugify.builder().build();
 
-        Product productToUpdate = this.productRepo.findById(id).get();
+        Product productToUpdate = this.productRepo.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("Product not found"));
 
         if(product.getName() != null){
             productToUpdate.setName(product.getName());
@@ -64,7 +80,8 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     public Product editProductStatus(Integer id) {
-        Product productToEdit = this.productRepo.findById(id).get();
+        Product productToEdit = this.productRepo.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("Product not found !"));
         if(productToEdit.getStatus())
             productToEdit.setStatus(false);
         else
@@ -75,6 +92,8 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     public void deleteProduct(Integer id) {
-        this.productRepo.deleteById(id);
+
+        this.productRepo.delete(this.productRepo.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("Product not found")));
     }
 }

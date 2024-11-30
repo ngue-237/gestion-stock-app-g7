@@ -40,6 +40,6 @@ public class Product implements Serializable {
     private List<Order> orders;
     @ManyToOne
     private CategoryProducts categoryProducts;
-    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
+    @OneToOne
     private ProductsStock productsStock;
 }

@@ -2,6 +2,7 @@ package com.logonedigital.gestion_stock_g7.services.products;
 
 import com.github.slugify.Slugify;
 import com.logonedigital.gestion_stock_g7.entities.CategoryProducts;
+import com.logonedigital.gestion_stock_g7.exception.ResourceNotFoundException;
 import com.logonedigital.gestion_stock_g7.repositories.CategoryProductsRepo;
 import org.springframework.stereotype.Service;
 
@@ -36,14 +37,14 @@ public class CategoryProductsImpl implements CategoryProductService {
     @Override
     public CategoryProducts getCategoryProductById(Integer categoryProductsId) {
 
-        return this.categoryProductsRepo.findById(categoryProductsId).get();
+        return this.categoryProductsRepo.findById(categoryProductsId).orElseThrow(()-> new ResourceNotFoundException("Category Product not found !"));
     }
 
     @Override
     public CategoryProducts updateCategoryProductsById(Integer categoryProductsId, CategoryProducts categoryProducts) {
         final Slugify slg = Slugify.builder().build();
 
-        CategoryProducts categoryProductsToEdit = this.categoryProductsRepo.findById(categoryProductsId).get();
+        CategoryProducts categoryProductsToEdit = this.categoryProductsRepo.findById(categoryProductsId).orElseThrow(()->new ResourceNotFoundException("Category product not found !"));
 
         categoryProductsToEdit.setName(categoryProducts.getName());
         categoryProductsToEdit.setDescription(categoryProducts.getDescription());
@@ -56,6 +57,9 @@ public class CategoryProductsImpl implements CategoryProductService {
 
     @Override
     public void deleteCategoryProduct(Integer categoryProductsId) {
-        this.categoryProductsRepo.deleteById(categoryProductsId);
+
+        this.categoryProductsRepo.delete(categoryProductsRepo
+                .findById(categoryProductsId)
+                .orElseThrow(()->new ResourceNotFoundException("Category product not found !")));
     }
 }

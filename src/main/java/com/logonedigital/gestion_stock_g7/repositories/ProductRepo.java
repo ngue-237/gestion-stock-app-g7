@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ProductRepo extends JpaRepository<Product,Integer> {
+public interface  ProductRepo extends JpaRepository<Product,Integer> {
 
     @Query("select p from Product p where p.status = true")
     List<Product> fetchActiveProduct();
