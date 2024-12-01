@@ -1,9 +1,14 @@
 package com.logonedigital.gestion_stock_g7.services.customer;
 
+import com.logonedigital.gestion_stock_g7.dto.customer.CustomerReqDTO;
 import com.logonedigital.gestion_stock_g7.entities.Customer;
+import com.logonedigital.gestion_stock_g7.entities.Location;
 import com.logonedigital.gestion_stock_g7.exception.ResourceExistException;
 import com.logonedigital.gestion_stock_g7.exception.ResourceNotFoundException;
 import com.logonedigital.gestion_stock_g7.repositories.CustomerRepo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -24,21 +29,32 @@ public class CustomerServiceImpl implements CustomerService{
 
 
     @Override
-    public Customer addCustomer(Customer customer) {
+    public Customer addCustomer(CustomerReqDTO customerReqDTO) {
 
         Optional<Customer> customerExist = this.customerRepo
-                .fetchByEmail(customer.getEmail());
+                .fetchByEmail(customerReqDTO.getEmail());
         if(customerExist.isPresent())
             throw new ResourceExistException("This email already exist !");
+
+        Customer customer = new Customer();
+
+        customer.setFirstname(customerReqDTO.getFirstname());
+        customer.setLastname(customerReqDTO.getLastname());
+        customer.setEmail(customerReqDTO.getEmail());
+        customer.setPhone(customerReqDTO.getPhone());
         customer.setCreatedAt(new Date());
         customer.setStatus(true);
-        customer.setLocation(this.locationService.addLocation((customer.getLocation())));
+        Location location = new Location();
+        location.setStreet(customerReqDTO.getLocationReqDTO().getStreet());
+        location.setPostalCode(customerReqDTO.getLocationReqDTO().getPostalCode());
+        location.setTown(customerReqDTO.getLocationReqDTO().getTown());
+        customer.setLocation(this.locationService.addLocation((location)));
         return this.customerRepo.save(customer);
     }
 
     @Override
-    public List<Customer> getCustomers() {
-        return this.customerRepo.findAll();
+    public Page<Customer> getCustomers(int offset, int pageSize) {
+        return this.customerRepo.findAll(PageRequest.of(offset, pageSize, Sort.by(Sort.Direction.DESC, "createdAt")));
     }
 
     @Override

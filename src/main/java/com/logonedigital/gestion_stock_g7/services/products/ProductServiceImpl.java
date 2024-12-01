@@ -1,6 +1,7 @@
 package com.logonedigital.gestion_stock_g7.services.products;
 
 import com.github.slugify.Slugify;
+import com.logonedigital.gestion_stock_g7.dto.products.ProductReqDTO;
 import com.logonedigital.gestion_stock_g7.entities.Product;
 import com.logonedigital.gestion_stock_g7.entities.ProductsStock;
 import com.logonedigital.gestion_stock_g7.exception.ResourceNotFoundException;
@@ -24,17 +25,22 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public Product addProduct(Product product) {
+    public Product addProduct(ProductReqDTO productReqDTO) {
         final Slugify slg = Slugify.builder().build();
+        Product product = new Product();
+        product.setName(productReqDTO.name());
+        product.setDescription(productReqDTO.description());
+        product.setPrice(productReqDTO.price());
 
         product.setCreatedAt(new Date());
-        product.setSlug(slg.slugify(product.getName()));
+        product.setSlug(slg.slugify(productReqDTO.name()));
         product.setStatus(true);
 
-        ProductsStock productsStock1 = product.getProductsStock();
-        productsStock1.setStatus(true);
-        productsStock1.setCreatedAt(new Date());
-        product.setProductsStock(this.productsStockRepo.save(productsStock1));
+        ProductsStock productsStock = new ProductsStock();
+        productsStock.setQuantity(productReqDTO.productStockReqDTO().quantity());
+        productsStock.setStatus(true);
+        productsStock.setCreatedAt(new Date());
+        product.setProductsStock(this.productsStockRepo.save(productsStock));
 
         return this.productRepo.save(product);
     }

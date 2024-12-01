@@ -1,8 +1,10 @@
 package com.logonedigital.gestion_stock_g7.controller;
 
+import com.logonedigital.gestion_stock_g7.dto.customer.CustomerReqDTO;
 import com.logonedigital.gestion_stock_g7.entities.Customer;
 import com.logonedigital.gestion_stock_g7.services.customer.CustomerService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,19 +21,19 @@ public class CustomerController {
     }
 
     @PostMapping(path = "customers/add")
-    public ResponseEntity<Customer> addCustomer(@Valid @RequestBody Customer customer){
+    public ResponseEntity<Customer> addCustomer(@Valid @RequestBody CustomerReqDTO customerReqDTO){
 
         return ResponseEntity
                 .status(201)
-                .body(this.customerService.addCustomer(customer));
+                .body(this.customerService.addCustomer(customerReqDTO));
     }
 
-    @GetMapping(path = "customer/get_all")
-    public ResponseEntity<List<Customer>> getAllCustomer(){
+    @GetMapping(path = "customer/get_all/{offset}/{pageSize}")
+    public ResponseEntity<Page<Customer>> getAllCustomer(@PathVariable int offset, @PathVariable int pageSize){
 
         return ResponseEntity
                 .status(200)
-                .body(this.customerService.getCustomers());
+                .body(this.customerService.getCustomers(offset,pageSize));
     }
 
     @GetMapping(path = "customers/get_by_id/{customerId}")

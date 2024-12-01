@@ -5,7 +5,7 @@ import com.logonedigital.gestion_stock_g7.repositories.LocationRepo;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.Date;
+
 
 @Service
 public class LocationServiceImpl implements LocationService{

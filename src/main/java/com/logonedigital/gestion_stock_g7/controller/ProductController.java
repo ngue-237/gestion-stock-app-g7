@@ -1,5 +1,6 @@
 package com.logonedigital.gestion_stock_g7.controller;
 
+import com.logonedigital.gestion_stock_g7.dto.products.ProductReqDTO;
 import com.logonedigital.gestion_stock_g7.entities.Product;
 import com.logonedigital.gestion_stock_g7.services.products.ProductService;
 import org.springframework.http.ResponseEntity;
@@ -16,11 +17,11 @@ public class ProductController {
     }
 
     @PostMapping(path = "/products/add")
-    public ResponseEntity<Product> addProduct(@RequestBody Product product){
+    public ResponseEntity<Product> addProduct(@RequestBody ProductReqDTO productReqDTO){
 
         return ResponseEntity
                 .status(201)
-                .body(this.productService.addProduct(product));
+                .body(this.productService.addProduct(productReqDTO));
     }
 
     @GetMapping(path = "products/get_all")
