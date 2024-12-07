@@ -1,11 +1,14 @@
 package com.logonedigital.gestion_stock_g7.services.customer;
 
 import com.logonedigital.gestion_stock_g7.dto.customer.CustomerReqDTO;
+import com.logonedigital.gestion_stock_g7.dto.customer.CustomerResDTO;
 import com.logonedigital.gestion_stock_g7.entities.Customer;
 import com.logonedigital.gestion_stock_g7.entities.Location;
 import com.logonedigital.gestion_stock_g7.exception.ResourceExistException;
 import com.logonedigital.gestion_stock_g7.exception.ResourceNotFoundException;
+import com.logonedigital.gestion_stock_g7.mapper.CustomerMapper;
 import com.logonedigital.gestion_stock_g7.repositories.CustomerRepo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -16,45 +19,45 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class CustomerServiceImpl implements CustomerService{
 
 
     private final CustomerRepo customerRepo;
     private final LocationService locationService;
+    private final CustomerMapper customerMapper;
 
-    public CustomerServiceImpl(CustomerRepo customerRepo, LocationService locationService) {
+    public CustomerServiceImpl(CustomerRepo customerRepo, LocationService locationService, CustomerMapper customerMapper) {
         this.customerRepo = customerRepo;
         this.locationService = locationService;
+        this.customerMapper = customerMapper;
     }
 
 
     @Override
-    public Customer addCustomer(CustomerReqDTO customerReqDTO) {
+    public CustomerResDTO addCustomer(CustomerReqDTO customerReqDTO) {
 
         Optional<Customer> customerExist = this.customerRepo
                 .fetchByEmail(customerReqDTO.getEmail());
         if(customerExist.isPresent())
             throw new ResourceExistException("This email already exist !");
 
-        Customer customer = new Customer();
+        Customer customer = this.customerMapper.fromCustomerReqDTO(customerReqDTO);
 
-        customer.setFirstname(customerReqDTO.getFirstname());
-        customer.setLastname(customerReqDTO.getLastname());
-        customer.setEmail(customerReqDTO.getEmail());
-        customer.setPhone(customerReqDTO.getPhone());
         customer.setCreatedAt(new Date());
         customer.setStatus(true);
-        Location location = new Location();
-        location.setStreet(customerReqDTO.getLocationReqDTO().getStreet());
-        location.setPostalCode(customerReqDTO.getLocationReqDTO().getPostalCode());
-        location.setTown(customerReqDTO.getLocationReqDTO().getTown());
+        Location location = this.customerMapper.fromLocationReqDTO(customerReqDTO.getLocationReqDTO());
+
         customer.setLocation(this.locationService.addLocation((location)));
-        return this.customerRepo.save(customer);
+        return this.customerMapper.fromCustomer(this.customerRepo.save(customer));
     }
 
     @Override
-    public Page<Customer> getCustomers(int offset, int pageSize) {
-        return this.customerRepo.findAll(PageRequest.of(offset, pageSize, Sort.by(Sort.Direction.DESC, "createdAt")));
+    public Page<CustomerResDTO> getCustomers(int offset, int pageSize) {
+
+
+        return this.customerRepo.findAll(PageRequest.of(offset, pageSize, Sort.by(Sort.Direction.DESC, "createdAt")))
+                        .map(customer -> this.customerMapper.fromCustomer(customer));
     }
 
     @Override
@@ -67,6 +70,7 @@ public class CustomerServiceImpl implements CustomerService{
 
     @Override
     public Customer getCustomerByEmail(String email) {
+        //TODO: corriger ce bug
         return this.customerRepo.fetchByEmail(email)
                 .orElseThrow(()->new ResourceNotFoundException("Customer not found !"));
     }

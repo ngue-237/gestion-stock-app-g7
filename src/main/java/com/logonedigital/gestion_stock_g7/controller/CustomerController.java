@@ -1,6 +1,7 @@
 package com.logonedigital.gestion_stock_g7.controller;
 
 import com.logonedigital.gestion_stock_g7.dto.customer.CustomerReqDTO;
+import com.logonedigital.gestion_stock_g7.dto.customer.CustomerResDTO;
 import com.logonedigital.gestion_stock_g7.entities.Customer;
 import com.logonedigital.gestion_stock_g7.services.customer.CustomerService;
 import jakarta.validation.Valid;
@@ -21,7 +22,7 @@ public class CustomerController {
     }
 
     @PostMapping(path = "customers/add")
-    public ResponseEntity<Customer> addCustomer(@Valid @RequestBody CustomerReqDTO customerReqDTO){
+    public ResponseEntity<CustomerResDTO> addCustomer(@Valid @RequestBody CustomerReqDTO customerReqDTO){
 
         return ResponseEntity
                 .status(201)
@@ -29,7 +30,7 @@ public class CustomerController {
     }
 
     @GetMapping(path = "customer/get_all/{offset}/{pageSize}")
-    public ResponseEntity<Page<Customer>> getAllCustomer(@PathVariable int offset, @PathVariable int pageSize){
+    public ResponseEntity<Page<CustomerResDTO>> getAllCustomer(@PathVariable int offset, @PathVariable int pageSize){
 
         return ResponseEntity
                 .status(200)
