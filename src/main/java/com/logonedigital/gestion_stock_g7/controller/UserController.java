@@ -1,5 +1,6 @@
 package com.logonedigital.gestion_stock_g7.controller;
 
+import com.logonedigital.gestion_stock_g7.dto.user.ActivationCode;
 import com.logonedigital.gestion_stock_g7.dto.user.UserDTO;
 import com.logonedigital.gestion_stock_g7.dto.user.UserReqDTO;
 import com.logonedigital.gestion_stock_g7.services.user.UserService;
@@ -20,5 +21,13 @@ public class UserController {
         return ResponseEntity
                 .status(201)
                 .body(this.userService.registerUser(userReqDTO));
+    }
+
+    @PutMapping(path = "/account_activation", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> activateAccount(@RequestBody ActivationCode activationCode){
+        this.userService.activateAccount(activationCode);
+        return ResponseEntity
+                .status(201)
+                .body("Account activated successfully !");
     }
 }
