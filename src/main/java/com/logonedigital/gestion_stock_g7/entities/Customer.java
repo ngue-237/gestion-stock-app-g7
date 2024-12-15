@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString
+
 @Entity
 @Table(name = "customers")
 public class Customer implements Serializable {

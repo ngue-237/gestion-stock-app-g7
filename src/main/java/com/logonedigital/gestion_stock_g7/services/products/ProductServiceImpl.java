@@ -1,12 +1,20 @@
 package com.logonedigital.gestion_stock_g7.services.products;
 
 import com.github.slugify.Slugify;
-import com.logonedigital.gestion_stock_g7.dto.products.ProductReqDTO;
+import com.logonedigital.gestion_stock_g7.dto.products.CategoryProductResDTO;
+import com.logonedigital.gestion_stock_g7.dto.products.productdto.ProductDTO;
+import com.logonedigital.gestion_stock_g7.dto.products.productdto.ProductReqDTO;
+import com.logonedigital.gestion_stock_g7.dto.products.productdto.ProductResDTO;
+import com.logonedigital.gestion_stock_g7.dto.products.ProductStockResDTO;
 import com.logonedigital.gestion_stock_g7.entities.Product;
 import com.logonedigital.gestion_stock_g7.entities.ProductsStock;
 import com.logonedigital.gestion_stock_g7.exception.ResourceNotFoundException;
 import com.logonedigital.gestion_stock_g7.repositories.ProductRepo;
 import com.logonedigital.gestion_stock_g7.repositories.ProductsStockRepo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -22,6 +30,37 @@ public class ProductServiceImpl implements ProductService{
     public ProductServiceImpl(ProductRepo productRepo, ProductsStockRepo productsStockRepo) {
         this.productRepo = productRepo;
         this.productsStockRepo = productsStockRepo;
+    }
+
+    private ProductDTO mapToProductDTO(Product product){
+        ProductDTO productDTO = new ProductDTO();
+
+        productDTO.setProductId(productDTO.getProductId());
+        productDTO.setName(product.getName());
+        productDTO.setSlug(product.getSlug());
+        productDTO.setPrice(product.getPrice());
+        productDTO.setDescription(product.getDescription());
+        productDTO.setStatus(product.getStatus());
+
+        CategoryProductResDTO categoryProductResDTO = new CategoryProductResDTO();
+        if(product.getCategoryProducts()== null)
+            productDTO.setCategoryProductResDTO(null);
+        else {
+            categoryProductResDTO.setName(product.getCategoryProducts().getName());
+            categoryProductResDTO.setSlug(product.getCategoryProducts().getSlug());
+            categoryProductResDTO.setSlug(product.getCategoryProducts().getDescription());
+            productDTO.setCategoryProductResDTO(categoryProductResDTO);
+        }
+
+        ProductStockResDTO productStockResDTO = new ProductStockResDTO();
+        if(product.getProductsStock() == null)
+            productDTO.setProductStockResDTO(null);
+        else {
+            productStockResDTO.setQuantity(product.getProductsStock().getQuantity());
+            productDTO.setProductStockResDTO(productStockResDTO);
+        }
+
+        return productDTO;
     }
 
     @Override
@@ -46,8 +85,21 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public List<Product> getProducts() {
-        return this.productRepo.findAll();
+    public ProductResDTO getProducts(int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<Product> productDTOPage = this.productRepo.findAll(pageable);
+        List<ProductDTO> content = productDTOPage.stream()
+                .map(product -> this.mapToProductDTO(product)).toList();
+
+        ProductResDTO productResDTO = new ProductResDTO();
+        productResDTO.setContent(content);
+        productResDTO.setPageNumber(productDTOPage.getNumber());
+        productResDTO.setPageSize(productDTOPage.getSize());
+        productResDTO.setTotalElements(productDTOPage.getTotalElements());
+        productResDTO.setTotalPages(productResDTO.getTotalPages());
+        productResDTO.setLast(productDTOPage.isLast());
+        return productResDTO;
+
     }
 
     @Override

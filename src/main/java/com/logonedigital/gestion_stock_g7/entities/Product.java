@@ -36,8 +36,6 @@ public class Product implements Serializable {
     private Boolean status;
 
     //associations
-    @ManyToMany(mappedBy = "products")
-    private List<Order> orders;
     @ManyToOne
     private CategoryProducts categoryProducts;
     @OneToOne

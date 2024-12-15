@@ -1,6 +1,7 @@
 package com.logonedigital.gestion_stock_g7.controller;
 
-import com.logonedigital.gestion_stock_g7.dto.products.ProductReqDTO;
+import com.logonedigital.gestion_stock_g7.dto.products.productdto.ProductReqDTO;
+import com.logonedigital.gestion_stock_g7.dto.products.productdto.ProductResDTO;
 import com.logonedigital.gestion_stock_g7.entities.Product;
 import com.logonedigital.gestion_stock_g7.services.products.ProductService;
 import org.springframework.http.ResponseEntity;
@@ -25,11 +26,14 @@ public class ProductController {
     }
 
     @GetMapping(path = "products/get_all")
-    public ResponseEntity<List<Product>> getProducts(){
+    public ResponseEntity<ProductResDTO> getProducts(
+            @RequestParam(value = "pageNumber", defaultValue = "0", required = false) int pageNumber,
+            @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize
+    ){
 
         return ResponseEntity
                 .status(200)
-                .body(this.productService.getProducts());
+                .body(this.productService.getProducts(pageNumber, pageSize));
     }
 
     @GetMapping(path = "products/get_all_activated")

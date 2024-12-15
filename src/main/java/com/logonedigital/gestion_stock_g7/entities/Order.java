@@ -1,22 +1,23 @@
 package com.logonedigital.gestion_stock_g7.entities;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 @Entity
 @Table(name = "orders")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "orderId")
 public class Order implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -35,6 +36,8 @@ public class Order implements Serializable {
     private Invoice invoice;
     @OneToOne(mappedBy = "order")
     private Delivery delivery;
-    @ManyToMany
-    private List<Product> products;
+    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
+    List<OrderItem> orderItems = new ArrayList<>();
+
+
 }

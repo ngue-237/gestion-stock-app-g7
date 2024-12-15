@@ -37,6 +37,16 @@ public class GlobalExceptionHandler {
                         new Date()));
 
     }
+    @ExceptionHandler(PasswordConfirmException.class)
+    public ResponseEntity<ErrorMessage> passwordConfirmException(Exception e){
+        return ResponseEntity
+                .status(400)
+                .body(new ErrorMessage(400,
+                        e.getMessage(),
+                        HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                        new Date()));
+
+    }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)

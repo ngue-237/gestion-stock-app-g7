@@ -1,6 +1,6 @@
-package com.logonedigital.gestion_stock_g7.dto.products;
+package com.logonedigital.gestion_stock_g7.dto.products.productdto;
 
-import jakarta.persistence.Column;
+import com.logonedigital.gestion_stock_g7.dto.products.ProductStockReqDTO;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 
